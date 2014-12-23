@@ -18,10 +18,10 @@ public class Table extends JFrame {
 	
 	
 	/**
-	 * One and only constructor of the go board
-	 * This constructor sets up the size and time of the board first.
-	 * After this it adds the board to the JFrame and sets visible to true
-	 * 
+	 * Only constructore for Table
+	 * Sets layout
+	 * 		size
+	 * 		lines on board
 	 * @param lines
 	 * @param time
 	 */
@@ -29,24 +29,18 @@ public class Table extends JFrame {
 		//set the fields
 		this.lines = lines;
 		//this.clockTime = time;
-		//set size
-		this.setSize(800,450);
-		//set the layout
-		//BorderLayout borders = new BorderLayout();
-		this.setLayout(new GridLayout());
+		this.setSize(800,450); //Wide to fit both mat and board
+		this.setLayout(new GridLayout());//Simple grid layout 2x1
 		//add the board to the table
-		board = new Board(this.lines);
-		this.add(board);
-		Mat goMat = new Mat();
-		this.add(goMat);
-		this.setVisible(true);
-		this.setResizable(false);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		board = new Board(this.lines);//New board with argument# of lines
+		this.add(board); // Add board to JFrame
+		Mat goMat = new Mat(); //Create a new mat
+		this.add(goMat); //Add the mat to the Table(JFrame)
+		this.setVisible(true); 
+		this.setResizable(false); //Not resizable for now
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Make sure it goes away after done
 	}
-	/* Same thing as my executable, would like to work on this fora while
-	 * 
-	 * 
-	 */
+	//Will create an executable later once I learn how
 	public static void main(String[] arg) {
 		//when adjusting sizes the clicks become more inaccurate
 		Table first = new Table(19, 5);

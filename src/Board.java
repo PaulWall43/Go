@@ -1,14 +1,26 @@
 
+//Will create a Go Package
 import java.awt.*;
 import java.lang.ArrayIndexOutOfBoundsException;
-
 import java.util.ArrayList;
 import javax.swing.JPanel;
-
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
+/**
+ * Board class that extends JPanel
+ * 
+ * @param lines - the size of the board
+ * @param under - StonePiece[][] the array of pieces played
+ * @param listOfGroups - Array list with record of all groups on board
+ * @param BLACK - all black pieces associated with 1
+ * @param WHITE - all white pieces associated with 2
+ * @param PLAYER_ONE - First move player will be associated with 1
+ * @param PLAYER_TWO - Second move player will be associated with 2
+ * @param turn - alternates between 1 and 2 
+ * @author paulwallace
+ *
+ */
 public class Board extends JPanel{
 	private int lines;
 	//underlying array controls state of the game
@@ -23,17 +35,17 @@ public class Board extends JPanel{
 	
 	//Constructor
 	public Board(int lines){
-		this.lines = lines;
-		this.under = new StonePiece[lines][lines];
+		this.lines = lines; //set lines
+		this.under = new StonePiece[lines][lines]; //set size of array
 		//fill the array with zeros
 		for(int r = 0; r < lines;r++)
 			for(int c = 0; c < lines ; c++) {
-				under[r][c] = null;
+				under[r][c] = null; // set all indexes to null
 			}
-		IListen listener = new IListen();
-		this.addMouseListener(listener);
-		this.turn = PLAYER_ONE;
-		this.setBackground(new Color(255,222,173));
+		IListen listener = new IListen(); // create a event handler
+		this.addMouseListener(listener); // mouse click handler
+		this.turn = PLAYER_ONE; // Always player ones turn first
+		this.setBackground(new Color(255,222,173)); // orange board
 	}
 	@Override
 	public void paintComponent(Graphics g){
@@ -118,43 +130,36 @@ public class Board extends JPanel{
 	//NOTE: REMEMBER THAT WHEN YOU PLACE A PIECE YOU MUST CHECK ALL OPPOSING TOUCHING THAT PIECE
 	//THIS MEANS THAT THERE CAN BE MUTILPLE OPPOSING PIECES THAT YOUR PIECE CAN BE TOUCHING
 	public void firstCheck(StonePiece piece){
-		StonePiece toCheck = null;
-		StonePiece oldPiece = null;
-		//This group of instantiations and declarations is for the case where a piece is touching multiple groups
-		//oldPiece will be used as first piece since we've already declared it
-		StonePiece secondTouch = null;
-		StonePiece thirdTouch = null;
-		StonePiece fourthTouch = null;
-		//If piece is touching multiple same color pieces set up a counter
-		int sameColorCounter = 0;
-		//very first check if the stone is in the 3 border lines
-		boolean willAdd = false;
-		boolean continued = false;
-		boolean newGroup = true;
-		//start the loop 1 above and 1 left of center piece
-		int originalY = piece.getY() - 1;
-		int originalX = piece.getX() - 1 ;
-		//What is oXNew for?
-		int oXNew = originalX + 3;
-		//What is oYNew for?
+		StonePiece toCheck = null; // the first opposing piece touched
+		StonePiece oldPiece = null; // this first touching like color piece
+		StonePiece secondTouch = null; // second
+		StonePiece thirdTouch = null; // third
+		StonePiece fourthTouch = null; // fourth
+		int sameColorCounter = 0; //increment for every same color touching piece
+		boolean willAdd = false; //will call add to group
+		boolean continued = false; //continued will call secondCheck
+		boolean newGroup = true; //newGroup will call 
+		int originalY = piece.getY() - 1; //start the loop 1 above and 1 left of center piece
+		int originalX = piece.getX() - 1;
+		int oXNew = originalX + 3; //end bottom right corner
 		int oYNew = originalY + 3;
-		//loop to check for like pieces
+		
 		for(int r = originalY ; r < oYNew; r++){
 			for(int c = originalX ; c < oXNew; c++ ){
 				if(originalY < 0 || originalX < 0)
-					//if the loop goes to the edge then throw the exception
+					//Need a different algorithm for edge moves
 					throw new ArrayIndexOutOfBoundsException("reached the edge");
 				try{
-					//Skip the loop if place is not directly touching
+					//Skip the loop if board spot is not directly touching piece (left, right, up, down)
 					if(r == originalY || r == oYNew -1 ){
 						if (c == originalX || c == oXNew -1 ){
 							continue;
 						}
 					}
-					//check if piece exists in this spot
+				//check if a piece exists in this spot
 				if(under[r][c] == null)
 					continue;
-				//check to see if the stone is the main stone
+				//check to see if the stone is center stone
 				if(under[r][c] == piece)
 					continue;
 
@@ -165,7 +170,8 @@ public class Board extends JPanel{
 					toCheck = under[r][c];
 				}	
 				//if the placed piece is touching a same color piece then add piece to the group
-				if(under[r][c].getNumber() == piece.getNumber()){
+				else //(under[r][c].getNumber() == piece.getNumber())
+					{
 					
 					//always execute this on the first time
 					//set will add to true and set the oldPiece to under[r][c]
@@ -180,77 +186,77 @@ public class Board extends JPanel{
 					}
 					
 					//if this piece is not part of the other group then must combine groups
-					else if(sameColorCounter == 1 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
+					if(sameColorCounter == 1 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
 					{
 						System.err.println("second touching piece");
 						willAdd = false;
 						secondTouch = under[r][c];
 						sameColorCounter++;
 					}
-					//if played piece is touching 2 same color pieces
-					else if(sameColorCounter == 2 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
+					//if played piece is touching 2 same color pieces all in different groups
+					if(sameColorCounter == 2 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
 					{
 						System.err.println("third touching piece");
 						thirdTouch = under[r][c];
 						sameColorCounter++;
 					}
-					//if played piece is touching 3 same color pieces
-					else if (sameColorCounter == 3 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
+					//if played piece is touching 3 same color pieces all in different groups
+					if (sameColorCounter == 3 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
 					{
 						System.err.println("fourth touching piece");
 						fourthTouch = under[r][c];
+						sameColorCounter++;
 					}
-				}
-						
-				//at this point the piece should be alone
-				
+					// end of else statement
+					}		
+				//Piece is all alone
 				}
 				catch(ArrayIndexOutOfBoundsException ex){
 					//beginning of the edge capture algorithm
 					}
+				//end of try catch, statement
 				}
+			// end of inner loop
 			}
-		
-		if(newGroup){
+		//end of outer loop
+		if(newGroup){ //if piece is solitary then create a new group
 			listOfGroups.add(new Group(piece, this.under));
 		}
 		//if played piece is touching multiple groups then combine some groups
 		//Note: I Will need to throw an exception here and have something deal with it somehow
-		if(sameColorCounter > 1)
+		if(sameColorCounter > 1) // if touching multiple friendly pieces then combine groups
 		{
 			System.out.println("Groups will be combined");
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
 					thirdTouch.getGroup(this) , fourthTouch.getGroup(this) , piece , this);
 		}
-		if(willAdd && oldPiece != null )
+		else if(willAdd && oldPiece != null ) //new piece added to older group
 		{
 			this.add( piece, oldPiece);
 		}
-		if(continued && toCheck != null)
+		if(continued && toCheck != null) //see if the touching enemy piece has caught anything 
 		{
 			this.secondStep(toCheck);
 		}
 	}
-	
-	//this methods creates a group (size of 1  to lines * lines)
-	//algorithm:
-	//--->1)Any like pieces above, below, left, right of main piece
-	//--->2)If YES then create a group 
-	//--->3)Call method on that piece
-	//--->4) Add all touching pieces to the group field arrayList
-	//--->5) Call method on all the pieces that the thing was touching
-	//--->6) This should give us all the pieces in the group
-	//--->7) Find the outside pieces 
-	//--->8) check if all outside pieces are 
+	/**
+	 * Checks if the parameter piece(or its group)
+	 * is surrounded.Delegates to the group isCaptured 
+	 * method which returns true if it is captured. 
+	 * @param piece
+	 */
 	public void secondStep(StonePiece piece){
 		//calling this method on the piece that may be captured
-		//if this piece is not already in a group
-		//Group newGroup = new Group(piece, this.under);
-		listOfGroups.add(piece.getGroup(this));
+		//listOfGroups.add(piece.getGroup(this));
+		
+		//delegate to the group method to see if captured
 		if((piece.getGroup(this)).isCaptured(piece, this.under))
-			piece.getGroup(this).remove(this);
+		{
+			//delegate to group remove
+			piece.getGroup(this).remove(this); //remove group/piece
+		}
 	}
-
+	//Not sure when this is called
 	public void remove(StonePiece piece){
 		under[piece.getY()][piece.getX()] = null;
 	}
@@ -261,13 +267,13 @@ public class Board extends JPanel{
 	 * Also sets that pieces inGroupNumber field which may be important later
 	 */
 	public void add( StonePiece pieceToAdd, StonePiece firstPiece){
-		if(listOfGroups.size() > 0){
-			if(firstPiece.getGroup(this).getNumber() == pieceToAdd.getNumber()){
-			(firstPiece.getGroup(this)).group.add(pieceToAdd);
-			pieceToAdd.setInGroupNumber(firstPiece.getInGroupNumber());
-			for(int i = 0; i < pieceToAdd.getGroup(this).group.size(); i++){
+		if(listOfGroups.size() > 0){ //make sure there is a group to be added to
+			if(firstPiece.getGroup(this).getNumber() == pieceToAdd.getNumber()){ //Same color pieces
+				(firstPiece.getGroup(this)).group.add(pieceToAdd);
+				pieceToAdd.setInGroupNumber(firstPiece.getInGroupNumber());
+				for(int i = 0; i < pieceToAdd.getGroup(this).group.size(); i++){
 				//System.out.println("Piece is at: " +  pieceToAdd.getGroup(this).group.get(i).getX() + " , " +pieceToAdd.getGroup(this).group.get(i).getY());
-			}
+				}
 			//System.out.println("Group Size of new piece is: " + pieceToAdd.getGroup(this).group.size());
 			}
 		}
