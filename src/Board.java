@@ -10,6 +10,9 @@ import java.awt.event.MouseListener;
 /**
  * Board class that extends JPanel
  * 
+ * Provides the main logic for: drawing the board
+ * 								determining effects of newly placed pieces
+ * 								mapping clicks to board 
  * @param lines - the size of the board
  * @param under - StonePiece[][] the array of pieces played
  * @param listOfGroups - Array list with record of all groups on board
@@ -27,7 +30,7 @@ public class Board extends JPanel{
 	private StonePiece[][] under;
 	//arrayLists of arrayLists
 	protected ArrayList<Group> listOfGroups = new ArrayList<Group>();
-	private final int BLACK = 1;
+	private final int BLACK = 1; //constants for colors
 	private final int WHITE = 2;
 	private final int PLAYER_ONE = 1;
 	private final int PLAYER_TWO = 2;
@@ -291,14 +294,14 @@ public class Board extends JPanel{
 				//call to helper
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
-				Point toCheck = new Point(toPut[0], toPut[1]);
+				Point toCheck = new Point(toPut[0], toPut[1]); //Call mapping method which returns an array
 				if(Board.isAllowed(toCheck, BLACK )) {
-					if(under[toPut[0]][toPut[1]] != null)
+					if(under[toPut[0]][toPut[1]] != null) // If piece is there already, no move
 						return;
-				under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut);
-				Board.this.firstCheck(under[toPut[0]][toPut[1]]);
-				Board.this.repaint();
-				Board.this.turn = PLAYER_TWO;
+				under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut); // Put a new appropriate piece
+				Board.this.firstCheck(under[toPut[0]][toPut[1]]); // Determine actions due to this piece
+				Board.this.repaint(); // repaint after effects have been enacted
+				Board.this.turn = PLAYER_TWO; // Set turn to PLAYER_TWO
 				}
 			}
 			else if(Board.this.turn == PLAYER_TWO){
@@ -331,10 +334,10 @@ public class Board extends JPanel{
 	
 	public int[] mapPoint(Point point){
 		//to return variables
-		int toReturnX =  0;
-		int toReturnY = 0;
-		int[] toReturn = new int[2];
-		double boardSize = Board.this.getWidth() * .9; 
+		int toReturnX =  0; // Will put this in return array 
+		int toReturnY = 0; // Will put this in return array 
+		int[] toReturn = new int[2]; // Will return this array with board coordinates 
+		double boardSize = Board.this.getWidth() * .9; //Board is always .9 of the screen
 		int width = Board.this.getWidth();
 		int height = Board.this.getHeight();
 		double centerX = width/2;
@@ -345,9 +348,9 @@ public class Board extends JPanel{
 		}
 		else
 			difference = 0;
-		//create a new array
+		//create a new array size of lines
 		int[] markersX = new int[lines];
-		//fill the array
+		//fill the array with 20 through (18 * boardSize/(18))
 		for(int i = 0; i < lines; i++){
 			//make sure to change this 20 at some point
 			markersX[i] = (int) (20 + (i * boardSize/(lines-1)));
@@ -360,14 +363,15 @@ public class Board extends JPanel{
 		//find the closest number to x
 		//revise this later to make more pretty
 		for(int i = 0; i < lines; i++){
-			if(i == 0)
-				check = (int) Math.abs(x - markersX[i]); 
-			else if(Math.abs(x - markersX[i]) < check){
+			if(i == 0) // At beginning of loop set check to initial 
+					   //difference from clicked x to first place
+				check = (int) Math.abs(x - markersX[i]); // set to absolute value of difference
+			else if(Math.abs(x - markersX[i]) < check){ // if new difference is smaller reset
 				check = Math.abs(x - markersX[i]);
 				toReturnX = i;
 				toReturn[1] = toReturnX;
 			}
-			if(check < ((boardSize/(lines -1))/2))
+			if(check < ((boardSize/(lines - 1))/2)) // If difference is less than certain value then break
 				break;
 			
 		}
@@ -399,97 +403,3 @@ public class Board extends JPanel{
 
 }
 //end of class
-//(height / lines + 2) 
-//NOTES
-//remember that multidimensionals do things
-
-
-//FIX THE LOOP
-
-
-
-
-
-//LEFT OFF 6/7/14 (1 A.M.)
-//WHY IS ARRAY RETURNING BOTH ZEROS NO SENSE
-//ALSO REMEMBER TO REFRESH THE PAGE AFTER EVERY MOVE
-
-//LEFT OFF 6/7/14 (3 A.M.) 
-//---> Why does xCount need to be adjusted by plus one??
-//---> Fixed the nonsense zero returns (width * .1 rather than width * .9)
-//---> Fixed the correlating problem by fixing multidimensional manipulation and understanding
-//---> PROBLEM
-//---->The distance calculation are slightly biased towards up, needs to be fixed
-//--->Need to prevent further moves on taken spot
-
-//LEFT OFF 6/7/14 (11:07 A.M.)
-//--->Piece placement is subject to height of the panel (when height changes the ratio changes
-//---> Fix the 0 problem
-
-//LEFT OFF 6/15/14
-//--->New mapping method is much more compact
-//--->Must improve accuracy as some of the clicks are slightly off
-//--->For now implemented no resizing
-//---> After improving precision move onto moves allowed
-
-//LEFT OFF 6/21/14
-//--->Fixed the inaccuracy for mapping
-//--->I DON'T KNOW WHY THE CONSTANTS FOR X AND Y ARE DIFFERENT
-//--->Next up is moves allowed
-//----> Plan to make helper method called in paint component
-//----->Will deal with surrounding
-//------>Next will be suicide
-//------->Then Komi
-//--->Then I plan to do score
-//---> DONE
-
-//LEFT OFF 6/25/14
-//--->New class StonePiece
-//--->Objects of this class are stored in the array "under"
-//--->Has lots of fields so that it is more helpful and interactable than simple integers
-//--->Next is to implement the capture algorithm
-//---> Should take me one sitting to get the main code down
-//---> One more sitting to finish up the code
-//---> Then on to the other rules
-//---->Thinking about possible features 
-//----->Number of pieces played, when game is over show number on stones
-//------>Clocks and other stuffs
-//------>Will look at other ways to use the clock with new techniques
-
-
-//LEFT OFF 7/20/14
-//---> When a piece is put down it should check its surroundings for an opposing piece
-//---> if one is found then we check if that opposing piece is touching other pieces (no diagnols)
-//---> If its not then we check if its surrounded by your color piece
-//--->If this is true then we remove the piece from the array
-//--->If it is connected then we make a new class representing all those stones as a group
-//---> FIGURED OUT SINGLE STONE CAPTURE
-//---> Next is to figure out multiple stone captures and edge captures
-//----> Multiple stones may be difficult but we can do it
-
-//---> this may be entirely more efficient to do with arrayLists 
-
-
-//LEFT OFF 8/26/14
-//--->Lots of progress on the capture algorithm
-//--->Have to fix some bugs and then move on to edge capture which might be weird
-//Gotta remember to get rid of the old groups that don't exist anymore from the listOfGroups instance variable
-//---> Next time make a new group when the first pieces are played and make sure the adding works
-
-
-//PLAN FOR HOW LONG THIS WILL TAKE
-/**
- * 1) Must throw exception or overload the method and finish the combine method
- * 2) Must make multiple checks for touching of opposing pieces
- * 3) Must finish the edge  algorithm and whatever stuff that has to deal with
- * 4) Must add suicide and komi rules
- * 4) Must add numbers to the sides of the board
- * 5) Must add the clock
- * 6) Must figure out a way to keep count of the game
- * 7) Must figure algorithm for keeping score
- * 8) Decorate and make it look pretty
- * 9) I should be able to finish this by the end of the school year
- */
-
-
-//Fix everything then start on comments then upload to github and then fuck shit up
