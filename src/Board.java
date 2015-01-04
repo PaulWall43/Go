@@ -1,4 +1,5 @@
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.lang.ArrayIndexOutOfBoundsException;
 
@@ -20,9 +21,11 @@ public class Board extends JPanel{
 	private final int PLAYER_ONE = 1;
 	private final int PLAYER_TWO = 2;
 	private int turn;
+	private static final Logger logger = LoggerFactory.getLogger(Board.class);
 	
 	//Constructor
 	public Board(int lines){
+		logger.info("Creating board");
 		this.lines = lines;
 		this.under = new StonePiece[lines][lines];
 		//fill the array with zeros
