@@ -165,17 +165,16 @@ public class Board extends JPanel{
 				if(under[r][c].getNumber() != piece.getNumber()) {
 					//call to check two
 					continued = true;
-					toCheck = under[r][c];
+					toCheck = under[r][c]; // This is the touching piece
 				}	
 				//if the placed piece is touching a same color piece then add piece to the group
 				if(under[r][c].getNumber() == piece.getNumber()){
-					
 					//always execute this on the first time
 					//set will add to true and set the oldPiece to under[r][c]
 					//this means that there will not be a new group and increase the sameColorCounter by 1
 					if(sameColorCounter == 0)
 					{
-						System.err.println("first touching piece" );
+						//System.err.println("first touching piece" );
 						willAdd = true;		
 						oldPiece = under[r][c];	
 						newGroup = false;
@@ -189,6 +188,8 @@ public class Board extends JPanel{
 						willAdd = false;
 						secondTouch = under[r][c];
 						sameColorCounter++;
+						Group.combineGroups(oldPiece.getGroup(this), 
+								secondTouch.getGroup(this), null, null, piece, this);
 					}
 					//if played piece is touching 2 same color pieces
 					else if(sameColorCounter == 2 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
@@ -219,15 +220,15 @@ public class Board extends JPanel{
 		}
 		//if played piece is touching multiple groups then combine some groups
 		//Note: I Will need to throw an exception here and have something deal with it somehow
-		if(sameColorCounter > 1)
+		/*if(sameColorCounter > 1)
 		{
-			System.out.println("Groups will be combined");
+			System.err.println("Groups will be combined");
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
 					thirdTouch.getGroup(this) , fourthTouch.getGroup(this) , piece , this);
-		}
+		}*/
 		if(willAdd && oldPiece != null )
 		{
-			this.add( piece, oldPiece);
+			this.add(piece, oldPiece);
 		}
 		if(continued && toCheck != null)
 		{

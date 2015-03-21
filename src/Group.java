@@ -22,8 +22,6 @@ public class Group {
 		piece.setInGroupNumber(id);
 		//find the rest of the group
 		//this.findGroup(piece, under);
-		
-		
 	}
 	
 //	public void findGroup(StonePiece piece, StonePiece[][] under){
@@ -72,10 +70,12 @@ public class Group {
 	public boolean isCaptured(StonePiece piece, StonePiece[][] under){
 		System.err.println("isCaptured has been called");
 		boolean toReturn = true;
+		System.err.println(group.size());
 		for(int i = 0; i < group.size(); i++){
 			if(group.size() == 0)
 				continue;
 			if(isOuterPiece(group.get(i), under)){
+				System.err.println("isOuterPiece returned true");
 				//if its outer and open spaces are filled with opposite color
 				//this sets the left right up and down to true/false
 				//THIS METHOD SHOULD PROBABLY BE IN STONE PIECE
@@ -246,8 +246,8 @@ public class Group {
 		int newY = oY + 3;
 		for(int r = oY; r < newY; r++)
 			for(int c = oX; c < newX; c++){
-				if(r == oY || r == newY)
-					if(c == oX || c == newX)
+				if(r == oY || r == newY - 1)
+					if(c == oX || c == newX - 1)
 						continue;
 				//make sure something is there
 				if(under[r][c] == null)
@@ -255,7 +255,6 @@ public class Group {
 			}
 		return toReturn;
 	}
-	
 	
 	public void findOpenSpaces(StonePiece piece, StonePiece[][] under){
 		//System.out.println("findOpenSpaces has been called");
