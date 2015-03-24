@@ -22,6 +22,7 @@ public class Group {
 		piece.setInGroupNumber(id);
 		//find the rest of the group
 		//this.findGroup(piece, under);
+		//System.err.println("count: " + count); 
 	}
 	
 //	public void findGroup(StonePiece piece, StonePiece[][] under){
@@ -195,10 +196,13 @@ public class Group {
 			goBoard.listOfGroups.remove(group2);
 			
 			}
-	}
+		}
 		//finally add the StonePiece piece to the last remaining group
 		if(picked.numberColor == pieceAdded.getNumber())
 			picked.group.add(pieceAdded);
+		
+		System.err.println("new number of groups:" + Group.count);
+		//System.err.println("new number of groups:" + goBoard.listOfGroups.)
 	}
 
 	
@@ -313,6 +317,10 @@ public class Group {
 	public void setId(int newId)
 	{
 		this.id = newId;
+		for(int i = 0; i < this.group.size(); i++)
+		{
+			this.group.get(i).setInGroupNumber(this.group.get(i).getInGroupNumber() - 1);
+		}
 	}
 	
 }
