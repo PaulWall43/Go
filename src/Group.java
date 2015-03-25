@@ -1,6 +1,9 @@
-
+import org.slf4j.Logger;
 import java.awt.Point;
 import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Group {
 	protected ArrayList<StonePiece> group;
@@ -10,7 +13,8 @@ public class Group {
 	private int id; 
 	private static int count = 0;
 	private static int countOfEmptyGroups = 0;
-	
+	private static final Logger logger = LoggerFactory.getLogger(Board.class);
+		
 	//constructor
 	public Group(StonePiece piece, StonePiece[][] under){
 		//System.out.println("Group constructor has been called");
@@ -62,40 +66,36 @@ public class Group {
 //		}
 //	}
 	
-	//method to see if the group has been captured
 	/**
 	 * Goes through check list for all pieces in the arrayList
 	 * If the check list goes yes for all pieces then return true
 	 * @return boolean 
 	 */
-	public boolean isCaptured(StonePiece piece, StonePiece[][] under){
-		System.err.println("isCaptured has been called");
+	public boolean isCaptured(StonePiece piece, StonePiece[][] under)
+	{
+		logger.debug("isCaptured has been called");
 		boolean toReturn = true;
-		System.err.println(group.size());
-		for(int i = 0; i < group.size(); i++){
+		for(int i = 0; i < group.size(); i++)
+		{
 			if(group.size() == 0)
 				continue;
-			if(isOuterPiece(group.get(i), under)){
-				System.err.println("isOuterPiece returned true");
-				//if its outer and open spaces are filled with opposite color
-				//this sets the left right up and down to true/false
-				//THIS METHOD SHOULD PROBABLY BE IN STONE PIECE
+			if(isOuterPiece(group.get(i), under))
+			{
 				findOpenSpaces(group.get(i), under);
 				ArrayList<Point> toUse = getOpenSpaces(group.get(i), under);
-				for(int a = 0; a < toUse.size(); a++){
-					if(under[toUse.get(a).x][toUse.get(a).y] == null){
+				for(int a = 0; a < toUse.size(); a++)
+				{
+					if(under[toUse.get(a).x][toUse.get(a).y] == null)
+					{
 						toReturn = false;
-						//System.err.println("Something is null");
 					}
 				}
-				if(toReturn){
-					//System.out.println("I got surrounded");
+				if(toReturn)
+				{
 					group.get(i).setSurrounded(true);
 				}
 			}	
 		}
-			
-		System.err.println("This group has been captured: " + toReturn);
 		return toReturn;
 	}
 	
@@ -126,13 +126,23 @@ public class Group {
 			Group group3, Group group4, StonePiece pieceAdded, 
 			Board goBoard)
 	{
-		//First we decide which groups are null
 		//Add all groups into an array
-		Group[] inQuestion = new Group[4];
-		inQuestion[0] = group1;
-		inQuestion[1] = group2;
-		inQuestion[2] = group3;
-		inQuestion[3] = group4;
+		Group[] touchingGroups = new Group[4];
+		touchingGroups[0] = group1;
+		touchingGroups[1] = group2;
+		touchingGroups[2] = group3;
+		touchingGroups[3] = group4;
+		
+		//Find how many groups are null
+		int numOfNullGroups = 0;
+		for(int i = 0; i < touchingGroups.length; i++)
+		{
+			if(touchingGroups[touchingGroups.length - i - 1] == null)
+			{
+				numOfNullGroups++; 
+			}
+			break;
+		}
 		//set up a counter to keep track of the minimum
 		//Note: could use a wrapper class to use the null feature for better code
 		int check = -1;
@@ -141,60 +151,45 @@ public class Group {
 		for(int i = 0; i < 4; i++)
 		{
 			//if group is null then skip everything
-			if(inQuestion[i] == null)
+			if(touchingGroups[i] == null)
 				continue;
 			if(check == -1)
 			{
-				picked = inQuestion[i];
-				check = inQuestion[i].id;
+				picked = touchingGroups[i];
+				check = touchingGroups[i].id;
 				continue;
 			}
-			if(inQuestion[i].id < check )
+			if(touchingGroups[i].id < check )
 			{
-				picked = inQuestion[i];
+				picked = touchingGroups[i];
 				continue;
 			}
 				
 		}
 		//Note: CHANGE SOME OF THE LOOP VARIABLES TO SOMETHING MORE REASONABLE
 		//loop through the array and put all of the older groups into picked
-		for(int a = 0; a < 4; a++)//4 is the length of inQuestion array
+		for(int a = 0; a < 4; a++)//4 is the length of touchingGroups array
 		{ 
 			//If group is not null and group is not main then
-			if(inQuestion[a] != null && inQuestion[a] != picked){
+			if(touchingGroups[a] != null && touchingGroups[a] != picked){
 		
-			//then add all group2 pieces to group1
-			for(int i = 0; i < inQuestion[a].group.size(); i++)
+			//then add all other pieces to group with lowest ID
+			for(int i = 0; i < touchingGroups[a].group.size(); i++)
 			{
-				picked.group.add(inQuestion[a].group.get(i)); 
-			}
-			//if group2 is not last object in ListOfGroups array then subtract all
-			//id's greater than group2's by 1
-			if(group2 != goBoard.listOfGroups.get(inQuestion[a].group.size() - 1))
-			{
-				//subtract 1 from all groups behind group2 (AKA newer than group 2)
-				//first loop through listOfGroups starting at group2
-				//BEWARE THAT ID MIGHT NOT ALWAYS ACCURATE
-				int c = inQuestion[a].id + 1;
-				//LOOK UP MATH INSIDE FOR LOOPS
-				for(int b = c ; b < goBoard.listOfGroups.size(); b++ )
-				{
-					goBoard.listOfGroups.get(b).setId
-					(goBoard.listOfGroups.get(b).getId() - 1);
-				}
-			}
+				picked.group.add(touchingGroups[a].group.get(i)); 
+			}			
 			
-			//clear all pieces from group2
-			inQuestion[a].group.clear();
-			//subtract 1 from the countOfEmptyGroups static variable
-			Group.countOfEmptyGroups--;
-			//subtract 1 from Group.count static variable
+			//Now remove this group
+			touchingGroups[a].group.clear();
+			goBoard.listOfGroups.remove(touchingGroups[a]);
 			Group.count--;
-			//set the group ID to negative number (hope that it's garbage collected)
-			inQuestion[a].id = countOfEmptyGroups;
-			//remove group2 from the listOfGroups in Board.java
-			goBoard.listOfGroups.remove(group2);
 			
+			//set all id's of the remaining groups is listOfGroups
+			for(int l = 0; l < goBoard.listOfGroups.size(); l++)
+			{
+				if(goBoard.listOfGroups.get(l).id != l)						
+					goBoard.listOfGroups.get(l).setId(l);
+			}
 			}
 		}
 		//finally add the StonePiece piece to the last remaining group
@@ -303,7 +298,10 @@ public class Group {
 		
 		return toReturn;
 	}
-	
+	/*
+	 * Getter method to return the number
+	 * of groups on the board currently
+	 */
 	public static int getCount(){
 		return count;
 	}

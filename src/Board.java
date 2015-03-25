@@ -188,8 +188,6 @@ public class Board extends JPanel{
 						willAdd = false;
 						secondTouch = under[r][c];
 						sameColorCounter++;
-						Group.combineGroups(oldPiece.getGroup(this), 
-								secondTouch.getGroup(this), null, null, piece, this);
 					}
 					//if played piece is touching 2 same color pieces
 					else if(sameColorCounter == 2 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
@@ -203,6 +201,7 @@ public class Board extends JPanel{
 					{
 						System.err.println("fourth touching piece");
 						fourthTouch = under[r][c];
+						sameColorCounter++; 
 					}
 				}
 						
@@ -215,7 +214,8 @@ public class Board extends JPanel{
 				}
 			}
 		
-		if(newGroup){
+		if(newGroup)
+		{
 			listOfGroups.add(new Group(piece, this.under));
 		}
 		//if played piece is touching multiple groups then combine some groups
@@ -226,6 +226,22 @@ public class Board extends JPanel{
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
 					thirdTouch.getGroup(this) , fourthTouch.getGroup(this) , piece , this);
 		}*/
+		else if(sameColorCounter == 2)
+		{
+			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
+					null , null , piece , this);	
+		}
+		else if(sameColorCounter == 3)
+		{
+			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
+					thirdTouch.getGroup(this) , null , piece , this);	
+		}
+		else if(sameColorCounter == 4)
+		{
+			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
+					thirdTouch.getGroup(this), fourthTouch.getGroup(this), piece, this);	
+		}
+
 		if(willAdd && oldPiece != null )
 		{
 			this.add(piece, oldPiece);
@@ -234,6 +250,8 @@ public class Board extends JPanel{
 		{
 			this.secondStep(toCheck);
 		}
+		System.err.println("The number of groups on board:" + Group.getCount());
+	    //logger.debug("The number of groups on board:" /*+ Group.getCount()*/ ); 
 	}
 	
 	//this methods creates a group (size of 1  to lines * lines)
