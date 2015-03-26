@@ -116,8 +116,7 @@ public class StonePiece {
 	}
 	
 	//method that returns the group that this specific StonePiece is in
-	public Group getGroup(Board goBoard){
-		//logger.info("inGroupNumber: " + inGroupNumber); 
+	public Group getGroup(Board goBoard){ 
 		if(goBoard.listOfGroups.size() > 0)
 			return goBoard.listOfGroups.get(inGroupNumber);
 		return null;

@@ -117,10 +117,13 @@ public class Board extends JPanel{
 	 * 2) checks if the piece should be added to a pre-existing group
 	 * @param piece The piece just placed
 	 */
-	
-	//NOTE: REMEMBER THAT WHEN YOU PLACE A PIECE YOU MUST CHECK ALL OPPOSING TOUCHING THAT PIECE
-	//THIS MEANS THAT THERE CAN BE MUTILPLE OPPOSING PIECES THAT YOUR PIECE CAN BE TOUCHING
 	public void firstCheck(StonePiece piece){
+		//Check if new piece is edge piece
+		if(isEdgePiece(piece))
+		{
+			edgePieceCheck(piece); 
+			return;
+		}
 		StonePiece toCheck = null;
 		StonePiece oldPiece = null;
 		//This group of instantiations and declarations is for the case where a piece is touching multiple groups
@@ -218,14 +221,7 @@ public class Board extends JPanel{
 		{
 			listOfGroups.add(new Group(piece, this.under));
 		}
-		//if played piece is touching multiple groups then combine some groups
-		//Note: I Will need to throw an exception here and have something deal with it somehow
-		/*if(sameColorCounter > 1)
-		{
-			System.err.println("Groups will be combined");
-			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
-					thirdTouch.getGroup(this) , fourthTouch.getGroup(this) , piece , this);
-		}*/
+
 		else if(sameColorCounter == 2)
 		{
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
@@ -250,8 +246,7 @@ public class Board extends JPanel{
 		{
 			this.secondStep(toCheck);
 		}
-		System.err.println("The number of groups on board:" + Group.getCount());
-	    //logger.debug("The number of groups on board:" /*+ Group.getCount()*/ ); 
+		System.err.println("The number of groups on board:" + Group.getCount()); 
 	}
 	
 	//this methods creates a group (size of 1  to lines * lines)
@@ -265,10 +260,6 @@ public class Board extends JPanel{
 	//--->7) Find the outside pieces 
 	//--->8) check if all outside pieces are 
 	public void secondStep(StonePiece piece){
-		//calling this method on the piece that may be captured
-		//if this piece is not already in a group
-		//Group newGroup = new Group(piece, this.under);
-		listOfGroups.add(piece.getGroup(this));
 		if((piece.getGroup(this)).isCaptured(piece, this.under))
 			piece.getGroup(this).remove(this);
 	}
@@ -283,17 +274,321 @@ public class Board extends JPanel{
 	 * Also sets that pieces inGroupNumber field which may be important later
 	 */
 	public void add( StonePiece pieceToAdd, StonePiece firstPiece){
-		if(listOfGroups.size() > 0){
-			if(firstPiece.getGroup(this).getNumber() == pieceToAdd.getNumber()){
+		if(listOfGroups.size() > 0)
+		{
+			if(firstPiece.getGroup(this).getNumber() == pieceToAdd.getNumber())
+			{
 			(firstPiece.getGroup(this)).group.add(pieceToAdd);
 			pieceToAdd.setInGroupNumber(firstPiece.getInGroupNumber());
-			for(int i = 0; i < pieceToAdd.getGroup(this).group.size(); i++){
+			/*
+			for(int i = 0; i < pieceToAdd.getGroup(this).group.size(); i++)
+			{
 				//System.out.println("Piece is at: " +  pieceToAdd.getGroup(this).group.get(i).getX() + " , " +pieceToAdd.getGroup(this).group.get(i).getY());
 			}
-			//System.out.println("Group Size of new piece is: " + pieceToAdd.getGroup(this).group.size());
+			//System.out.println("Group Size of new piece is: " + pieceToAdd.getGroup(this).group.size()); */
 			}
 		}
+	}
+	
+	private boolean isEdgePiece(StonePiece piece)
+	{
+		if(piece.getX() == (lines - 1) || piece.getX() == 0)
+			return true;
+		if(piece.getY() == (lines - 1) || piece.getY() == 0)
+			return true;
+		return false; 
+	}
+	
+	private void edgePieceCheck(StonePiece piece)
+	{
+		boolean upperLeftCorner = false;
+		boolean lowerLeftCorner = false;
+		boolean upperRightCorner = false;
+		boolean lowerRightCorner = false;
+		boolean westEdge = false;
+		boolean eastEdge = false;
+		boolean northEdge = false;
+		boolean southEdge = false;
+		//Check for corner pieces
+		if(isCornerPiece(piece) == 1)
+		{
+			upperLeftCorner(piece);
+			return;
+		}
+		else if(isCornerPiece(piece) == 2)
+		{
+			lowerLeftCorner = true;
+			return;
+		}
+		else if(isCornerPiece(piece) == 3)
+		{
+			upperRightCorner = true;
+			return;
+		}
+		else if(isCornerPiece(piece) == 4)
+		{
+			lowerRightCorner = true;
+			return;
+		}
+		else if(isCornerPiece(piece) == 0)
+		{
+			if(piece.getX() == 0)
+				westEdge = true;
+			else if(piece.getX() ==  (lines - 1))
+				eastEdge = true;
+			else if(piece.getY() == 0)
+				northEdge = true;
+			else if(piece.getY() == (lines - 1))
+				southEdge = true;
+		}
+	}
+	
+	private int isCornerPiece(StonePiece piece)
+	{
+		int toReturn = 0;
+		if(piece.getX() == 0) 
+		{
+			if(piece.getY() == 0)
+				return 1;
+			else if(piece.getY() == (lines - 1))
+				return 2;
+		}
+		else
+		{
+			if(piece.getY() == 0)
+				return 3;
+			else if(piece.getY() == (lines - 1))
+				return 4;
+		}
+		//Return 0 in case of failure
+		return toReturn; 
+	}
+	
+	private void northEdge(StonePiece piece)
+	{
 		
+	}
+	private void southEdge(StonePiece piece)
+	{
+		
+	}
+	private void westEdge(StonePiece piece)
+	{
+		
+	}
+	private void eastEdge(StonePiece piece)
+	{
+		
+	}
+	private void upperLeftCorner(StonePiece piece)
+	{
+		boolean newGroup = true;
+		boolean touchingOneEnemy = false;
+		boolean touchingTwoEnemy = false;
+		boolean callCombineGroups = false;
+		//Check spot below
+		if(under[0][1] != null)
+		{
+			//Check if same color
+			if(under[0][1].getNumber() == piece.getNumber())
+			{
+				newGroup = false;
+				//add(piece, under[0][1]); 
+			}
+			else
+				callSecondStep = true;
+				
+		}
+		//Check spot to the right
+		if(under[1][0] != null)
+		{
+			//check if same color
+			if(under[1][0].getNumber() == piece.getNumber())
+			{
+				if(newGroup == false)
+					callCombineGroups = true;
+				else
+					add(piece, under[1][0]);
+			}
+			else
+				callSecondStep = true;
+		}
+		if(newGroup)
+		{
+			listOfGroups.add(new Group(piece, this.under));
+		}
+		else
+		{
+			if(callCombineGroups)
+			{
+				Group.combineGroups(under[0][1].getGroup(this), under[1][0].getGroup(this), null, null, piece, this);
+			}
+			else
+			{
+				add(piece, under[0][1]);
+			}
+		}
+		if(callSecondStep)
+		{
+			secondStep(piece);
+		}
+	}
+	
+	private void lowerLeftCorner(StonePiece piece)
+	{
+		boolean newGroup = true;
+		boolean callSecondStep = false;
+		boolean callCombineGroups = false;
+		//Check spot below
+		if(under[0][lines - 2] != null)
+		{
+			//Check if same color
+			if(under[0][lines - 2].getNumber() == piece.getNumber())
+			{
+				newGroup = false;
+				//add(piece, under[0][1]); 
+			}
+			else
+				callSecondStep = true;
+				
+		}
+		//Check spot to the right
+		if(under[1][lines - 1] != null)
+		{
+			//check if same color
+			if(under[1][lines - 1].getNumber() == piece.getNumber())
+			{
+				if(newGroup == false)
+					callCombineGroups = true;
+				else
+					add(piece, under[1][lines - 1]);
+			}
+			else
+				callSecondStep = true;
+		}
+		if(newGroup)
+		{
+			listOfGroups.add(new Group(piece, this.under));
+		}
+		else
+		{
+			if(callCombineGroups)
+			{
+				Group.combineGroups(under[0][lines - 2].getGroup(this), under[1][lines - 1].getGroup(this), null, null, piece, this);
+			}
+			else
+			{
+				add(piece, under[0][lines - 2]);
+			}
+		}
+		if(callSecondStep)
+		{
+			secondStep(piece);
+		}
+	}
+	private void upperRightCorner(StonePiece piece)
+	{
+		boolean newGroup = true;
+		boolean callSecondStep = false;
+		boolean callCombineGroups = false;
+		//Check spot below
+		if(under[lines - 1][1] != null)
+		{
+			//Check if same color
+			if(under[lines - 1][1].getNumber() == piece.getNumber())
+			{
+				newGroup = false;
+				//add(piece, under[0][1]); 
+			}
+			else
+				callSecondStep = true;
+				
+		}
+		//Check spot to the right
+		if(under[lines - 2][0] != null)
+		{
+			//check if same color
+			if(under[lines - 2][0].getNumber() == piece.getNumber())
+			{
+				if(newGroup == false)
+					callCombineGroups = true;
+				else
+					add(piece, under[1][0]);
+			}
+			else
+				callSecondStep = true;
+		}
+		if(newGroup)
+		{
+			listOfGroups.add(new Group(piece, this.under));
+		}
+		else
+		{
+			if(callCombineGroups)
+			{
+				Group.combineGroups(under[lines - 1][1].getGroup(this), under[lines - 2][0].getGroup(this), null, null, piece, this);
+			}
+			else
+			{
+				add(piece, under[lines - 1][1]);
+			}
+		}
+		if(callSecondStep)
+		{
+			secondStep(piece);
+		}
+	}
+	private void lowerRightCorner(StonePiece piece)
+	{
+		boolean newGroup = true;
+		boolean callSecondStep = false;
+		boolean callCombineGroups = false;
+		//Check spot below
+		if(under[lines - 1][lines - 2] != null)
+		{
+			//Check if same color
+			if(under[lines - 1][lines - 2].getNumber() == piece.getNumber())
+			{
+				newGroup = false;
+				//add(piece, under[0][1]); 
+			}
+			else
+				callSecondStep = true;
+				
+		}
+		//Check spot to the right
+		if(under[lines - 2][0] != null)
+		{
+			//check if same color
+			if(under[lines - 2][0].getNumber() == piece.getNumber())
+			{
+				if(newGroup == false)
+					callCombineGroups = true;
+				else
+					add(piece, under[lines - 2][0]);
+			}
+			else
+				callSecondStep = true;
+		}
+		if(newGroup)
+		{
+			listOfGroups.add(new Group(piece, this.under));
+		}
+		else
+		{
+			if(callCombineGroups)
+			{
+				Group.combineGroups(under[lines - 1][lines - 2].getGroup(this), under[lines - 2][0].getGroup(this), null, null, piece, this);
+			}
+			else
+			{
+				add(piece, under[lines - 1][lines - 2]);
+			}
+		}
+		if(callSecondStep)
+		{
+			secondStep(piece);
+		}
 	}
 	
 	//Inner class to for action listeners
@@ -394,7 +689,7 @@ public class Board extends JPanel{
 					//make sure to change this 20 at some point
 					markersY[i] = (int) (20 + difference + (i * boardSize/(lines-1)));
 				}
-				//find the closest number to x
+				//find the closest number to y
 				//revise this later to make more pretty
 				for(int i = 0; i < lines; i++){
 					if(i == 0)
@@ -408,7 +703,6 @@ public class Board extends JPanel{
 						break;
 				}
 				toReturn[0] = toReturnY;
-				//set the x value of the return array
 				return toReturn;
 	}
 	}

@@ -13,7 +13,7 @@ public class Group {
 	private int id; 
 	private static int count = 0;
 	private static int countOfEmptyGroups = 0;
-	private static final Logger logger = LoggerFactory.getLogger(Board.class);
+	private static final Logger logger = LoggerFactory.getLogger(Group.class);
 		
 	//constructor
 	public Group(StonePiece piece, StonePiece[][] under){
@@ -24,9 +24,6 @@ public class Group {
 		group = new ArrayList<StonePiece>();
 		group.add(piece);
 		piece.setInGroupNumber(id);
-		//find the rest of the group
-		//this.findGroup(piece, under);
-		//System.err.println("count: " + count); 
 	}
 	
 //	public void findGroup(StonePiece piece, StonePiece[][] under){
@@ -166,8 +163,6 @@ public class Group {
 			}
 				
 		}
-		//Note: CHANGE SOME OF THE LOOP VARIABLES TO SOMETHING MORE REASONABLE
-		//loop through the array and put all of the older groups into picked
 		for(int a = 0; a < 4; a++)//4 is the length of touchingGroups array
 		{ 
 			//If group is not null and group is not main then
@@ -197,7 +192,6 @@ public class Group {
 			picked.group.add(pieceAdded);
 		
 		System.err.println("new number of groups:" + Group.count);
-		//System.err.println("new number of groups:" + goBoard.listOfGroups.)
 	}
 
 	
@@ -228,8 +222,8 @@ public class Group {
 	public void remove(Board goBoard){
 		for(int i = 0; i < group.size(); i++){
 				goBoard.remove(group.get(i));
-				System.out.println("Calling group.remove()");
-				System.out.println("The groupSize is: " + group.size());
+				System.err.println("Calling group.remove()");
+				System.err.println("The groupSize is: " + group.size());
 			}
 			group.clear();
 				//}
