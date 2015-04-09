@@ -1,4 +1,5 @@
 import org.slf4j.Logger;
+
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -82,9 +83,18 @@ public class Group {
 				ArrayList<Point> toUse = getOpenSpaces(group.get(i), under);
 				for(int a = 0; a < toUse.size(); a++)
 				{
-					if(under[toUse.get(a).x][toUse.get(a).y] == null)
+					//if(toUse.get(a).x < 0 || toUse.get(a).y < 0 || toUse.get(a).x > Board.getLines() || toUse.get(a).x > Board.getLines())
+						//throw new ArrayIndexOutOfBoundsException("Reached edge in isCaptured");
+					try
 					{
-						toReturn = false;
+						if(under[toUse.get(a).x][toUse.get(a).y] == null)
+						{
+							toReturn = false;
+						}
+					}
+					catch(ArrayIndexOutOfBoundsException ex)
+					{
+						continue; 
 					}
 				}
 				if(toReturn)
@@ -242,9 +252,16 @@ public class Group {
 				if(r == oY || r == newY - 1)
 					if(c == oX || c == newX - 1)
 						continue;
+				try
+				{
 				//make sure something is there
 				if(under[r][c] == null)
 					toReturn = true;
+				}
+				catch(ArrayIndexOutOfBoundsException ex )
+				{
+					continue;
+				}
 			}
 		return toReturn;
 	}
@@ -260,19 +277,45 @@ public class Group {
 			piece.openSpaces[3]= false;
 			return;
 		}
-		
-		if(under[oY-1][oX] != null && 
-				under[oY-1][oX].getNumber() == piece.getNumber())
+		try
+		{
+			if(under[oY-1][oX] != null && 
+					under[oY-1][oX].getNumber() == piece.getNumber())
 				piece.openSpaces[2] = false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex)
+		{
+			piece.openSpaces[2] = false;
+		}
+		try
+		{
 		if(under[oY+1][oX] != null &&
 				under[oY+1][oX].getNumber() == piece.getNumber())
 			piece.openSpaces[3]= false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex)
+		{
+			piece.openSpaces[3] = false;
+		}
+		try{
 		if(under[oY][oX-1] != null &&
 				under[oY][oX-1].getNumber() == piece.getNumber())
 			piece.openSpaces[0] = false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex)
+		{
+			piece.openSpaces[0] = false;
+		}
+		try 
+		{
 		if(under[oY][oX+1] != null &&
 				under[oY][oX+1].getNumber() == piece.getNumber())
 			piece.openSpaces[1] = false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex) 
+		{
+			piece.openSpaces[1] = false;
+		}
 	}
 	//Return the locations of the open spaces
 	public ArrayList<Point> getOpenSpaces(StonePiece piece, StonePiece[][] under){

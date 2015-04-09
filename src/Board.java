@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class Board extends JPanel{
-	private int lines;
+	private static int lines;
 	//underlying array controls state of the game
 	private StonePiece[][] under;
 	//arrayLists of arrayLists
@@ -119,11 +119,11 @@ public class Board extends JPanel{
 	 */
 	public void firstCheck(StonePiece piece){
 		//Check if new piece is edge piece
-		if(isEdgePiece(piece))
+		/*if(isEdgePiece(piece))
 		{
 			edgePieceCheck(piece); 
 			return;
-		}
+		}*/
 		StonePiece toCheck = null;
 		StonePiece oldPiece = null;
 		//This group of instantiations and declarations is for the case where a piece is touching multiple groups
@@ -147,9 +147,9 @@ public class Board extends JPanel{
 		//loop to check for like pieces
 		for(int r = originalY ; r < oYNew; r++){
 			for(int c = originalX ; c < oXNew; c++ ){
-				if(originalY < 0 || originalX < 0)
-					//if the loop goes to the edge then throw the exception
-					throw new ArrayIndexOutOfBoundsException("reached the edge");
+				//if(originalY < 0 || originalX < 0 || originalY >= lines || originalY >= lines)
+				//if(r < 0 || c < 0 || c >= lines || r >= lines)
+					//throw new ArrayIndexOutOfBoundsException("reached the edge");
 				try{
 					//Skip the loop if place is not directly touching
 					if(r == originalY || r == oYNew -1 ){
@@ -205,14 +205,16 @@ public class Board extends JPanel{
 						System.err.println("fourth touching piece");
 						fourthTouch = under[r][c];
 						sameColorCounter++; 
+						}
 					}
-				}
 						
 				//at this point the piece should be alone
-				
 				}
-				catch(ArrayIndexOutOfBoundsException ex){
+				catch(ArrayIndexOutOfBoundsException ex)
+				{
 					//beginning of the edge capture algorithm
+					//Piece is on the edge so either edge or corner
+					continue; 
 					}
 				}
 			}
@@ -290,305 +292,11 @@ public class Board extends JPanel{
 		}
 	}
 	
-	private boolean isEdgePiece(StonePiece piece)
-	{
-		if(piece.getX() == (lines - 1) || piece.getX() == 0)
-			return true;
-		if(piece.getY() == (lines - 1) || piece.getY() == 0)
-			return true;
-		return false; 
-	}
 	
-	private void edgePieceCheck(StonePiece piece)
-	{
-		boolean upperLeftCorner = false;
-		boolean lowerLeftCorner = false;
-		boolean upperRightCorner = false;
-		boolean lowerRightCorner = false;
-		boolean westEdge = false;
-		boolean eastEdge = false;
-		boolean northEdge = false;
-		boolean southEdge = false;
-		//Check for corner pieces
-		if(isCornerPiece(piece) == 1)
-		{
-			upperLeftCorner(piece);
-			return;
-		}
-		else if(isCornerPiece(piece) == 2)
-		{
-			lowerLeftCorner = true;
-			return;
-		}
-		else if(isCornerPiece(piece) == 3)
-		{
-			upperRightCorner = true;
-			return;
-		}
-		else if(isCornerPiece(piece) == 4)
-		{
-			lowerRightCorner = true;
-			return;
-		}
-		else if(isCornerPiece(piece) == 0)
-		{
-			if(piece.getX() == 0)
-				westEdge = true;
-			else if(piece.getX() ==  (lines - 1))
-				eastEdge = true;
-			else if(piece.getY() == 0)
-				northEdge = true;
-			else if(piece.getY() == (lines - 1))
-				southEdge = true;
-		}
-	}
 	
-	private int isCornerPiece(StonePiece piece)
+	public static int getLines()
 	{
-		int toReturn = 0;
-		if(piece.getX() == 0) 
-		{
-			if(piece.getY() == 0)
-				return 1;
-			else if(piece.getY() == (lines - 1))
-				return 2;
-		}
-		else
-		{
-			if(piece.getY() == 0)
-				return 3;
-			else if(piece.getY() == (lines - 1))
-				return 4;
-		}
-		//Return 0 in case of failure
-		return toReturn; 
-	}
-	
-	private void northEdge(StonePiece piece)
-	{
-		
-	}
-	private void southEdge(StonePiece piece)
-	{
-		
-	}
-	private void westEdge(StonePiece piece)
-	{
-		
-	}
-	private void eastEdge(StonePiece piece)
-	{
-		
-	}
-	private void upperLeftCorner(StonePiece piece)
-	{
-		boolean newGroup = true;
-		boolean touchingOneEnemy = false;
-		boolean touchingTwoEnemy = false;
-		boolean callCombineGroups = false;
-		//Check spot below
-		if(under[0][1] != null)
-		{
-			//Check if same color
-			if(under[0][1].getNumber() == piece.getNumber())
-			{
-				newGroup = false;
-				//add(piece, under[0][1]); 
-			}
-			else
-				callSecondStep = true;
-				
-		}
-		//Check spot to the right
-		if(under[1][0] != null)
-		{
-			//check if same color
-			if(under[1][0].getNumber() == piece.getNumber())
-			{
-				if(newGroup == false)
-					callCombineGroups = true;
-				else
-					add(piece, under[1][0]);
-			}
-			else
-				callSecondStep = true;
-		}
-		if(newGroup)
-		{
-			listOfGroups.add(new Group(piece, this.under));
-		}
-		else
-		{
-			if(callCombineGroups)
-			{
-				Group.combineGroups(under[0][1].getGroup(this), under[1][0].getGroup(this), null, null, piece, this);
-			}
-			else
-			{
-				add(piece, under[0][1]);
-			}
-		}
-		if(callSecondStep)
-		{
-			secondStep(piece);
-		}
-	}
-	
-	private void lowerLeftCorner(StonePiece piece)
-	{
-		boolean newGroup = true;
-		boolean callSecondStep = false;
-		boolean callCombineGroups = false;
-		//Check spot below
-		if(under[0][lines - 2] != null)
-		{
-			//Check if same color
-			if(under[0][lines - 2].getNumber() == piece.getNumber())
-			{
-				newGroup = false;
-				//add(piece, under[0][1]); 
-			}
-			else
-				callSecondStep = true;
-				
-		}
-		//Check spot to the right
-		if(under[1][lines - 1] != null)
-		{
-			//check if same color
-			if(under[1][lines - 1].getNumber() == piece.getNumber())
-			{
-				if(newGroup == false)
-					callCombineGroups = true;
-				else
-					add(piece, under[1][lines - 1]);
-			}
-			else
-				callSecondStep = true;
-		}
-		if(newGroup)
-		{
-			listOfGroups.add(new Group(piece, this.under));
-		}
-		else
-		{
-			if(callCombineGroups)
-			{
-				Group.combineGroups(under[0][lines - 2].getGroup(this), under[1][lines - 1].getGroup(this), null, null, piece, this);
-			}
-			else
-			{
-				add(piece, under[0][lines - 2]);
-			}
-		}
-		if(callSecondStep)
-		{
-			secondStep(piece);
-		}
-	}
-	private void upperRightCorner(StonePiece piece)
-	{
-		boolean newGroup = true;
-		boolean callSecondStep = false;
-		boolean callCombineGroups = false;
-		//Check spot below
-		if(under[lines - 1][1] != null)
-		{
-			//Check if same color
-			if(under[lines - 1][1].getNumber() == piece.getNumber())
-			{
-				newGroup = false;
-				//add(piece, under[0][1]); 
-			}
-			else
-				callSecondStep = true;
-				
-		}
-		//Check spot to the right
-		if(under[lines - 2][0] != null)
-		{
-			//check if same color
-			if(under[lines - 2][0].getNumber() == piece.getNumber())
-			{
-				if(newGroup == false)
-					callCombineGroups = true;
-				else
-					add(piece, under[1][0]);
-			}
-			else
-				callSecondStep = true;
-		}
-		if(newGroup)
-		{
-			listOfGroups.add(new Group(piece, this.under));
-		}
-		else
-		{
-			if(callCombineGroups)
-			{
-				Group.combineGroups(under[lines - 1][1].getGroup(this), under[lines - 2][0].getGroup(this), null, null, piece, this);
-			}
-			else
-			{
-				add(piece, under[lines - 1][1]);
-			}
-		}
-		if(callSecondStep)
-		{
-			secondStep(piece);
-		}
-	}
-	private void lowerRightCorner(StonePiece piece)
-	{
-		boolean newGroup = true;
-		boolean callSecondStep = false;
-		boolean callCombineGroups = false;
-		//Check spot below
-		if(under[lines - 1][lines - 2] != null)
-		{
-			//Check if same color
-			if(under[lines - 1][lines - 2].getNumber() == piece.getNumber())
-			{
-				newGroup = false;
-				//add(piece, under[0][1]); 
-			}
-			else
-				callSecondStep = true;
-				
-		}
-		//Check spot to the right
-		if(under[lines - 2][0] != null)
-		{
-			//check if same color
-			if(under[lines - 2][0].getNumber() == piece.getNumber())
-			{
-				if(newGroup == false)
-					callCombineGroups = true;
-				else
-					add(piece, under[lines - 2][0]);
-			}
-			else
-				callSecondStep = true;
-		}
-		if(newGroup)
-		{
-			listOfGroups.add(new Group(piece, this.under));
-		}
-		else
-		{
-			if(callCombineGroups)
-			{
-				Group.combineGroups(under[lines - 1][lines - 2].getGroup(this), under[lines - 2][0].getGroup(this), null, null, piece, this);
-			}
-			else
-			{
-				add(piece, under[lines - 1][lines - 2]);
-			}
-		}
-		if(callSecondStep)
-		{
-			secondStep(piece);
-		}
+		return lines;
 	}
 	
 	//Inner class to for action listeners
