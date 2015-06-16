@@ -72,6 +72,7 @@ public class Group {
 	public boolean isCaptured(StonePiece piece, StonePiece[][] under)
 	{
 		logger.debug("isCaptured has been called");
+		//System.err.println("isCaptured has been called");
 		boolean toReturn = true;
 		for(int i = 0; i < group.size(); i++)
 		{
@@ -89,6 +90,7 @@ public class Group {
 					{
 						if(under[toUse.get(a).x][toUse.get(a).y] == null)
 						{
+							//System.out.println(toUse.get(a).x + " " + toUse.get(a).y);
 							toReturn = false;
 						}
 					}
@@ -96,6 +98,9 @@ public class Group {
 					{
 						continue; 
 					}
+//					//reset the pieces open spaces to true
+//					for(int j = 0; j < group.get(i).openSpaces.length; j++)
+//						group.get(i).openSpaces[j] = true;
 				}
 				if(toReturn)
 				{
@@ -103,6 +108,7 @@ public class Group {
 				}
 			}	
 		}
+		System.out.println("");
 		return toReturn;
 	}
 	
@@ -202,7 +208,7 @@ public class Group {
 			picked.group.add(pieceAdded);
 		
 		System.err.println("new number of groups:" + Group.count);
-	}
+	} //end of combineGroups
 
 	
 	//getter setters
@@ -281,7 +287,10 @@ public class Group {
 		{
 			if(under[oY-1][oX] != null && 
 					under[oY-1][oX].getNumber() == piece.getNumber())
+			{
+				//System.out.println("up is same color piece");
 				piece.openSpaces[2] = false;
+			}
 		}
 		catch(ArrayIndexOutOfBoundsException ex)
 		{
@@ -289,18 +298,24 @@ public class Group {
 		}
 		try
 		{
-		if(under[oY+1][oX] != null &&
-				under[oY+1][oX].getNumber() == piece.getNumber())
-			piece.openSpaces[3]= false;
+			if(under[oY+1][oX] != null &&
+					under[oY+1][oX].getNumber() == piece.getNumber())
+			{
+				//System.out.println("down same color piece");
+				piece.openSpaces[3]= false;
+			}
 		}
 		catch(ArrayIndexOutOfBoundsException ex)
 		{
 			piece.openSpaces[3] = false;
 		}
 		try{
-		if(under[oY][oX-1] != null &&
-				under[oY][oX-1].getNumber() == piece.getNumber())
-			piece.openSpaces[0] = false;
+			if(under[oY][oX-1] != null &&
+					under[oY][oX-1].getNumber() == piece.getNumber())
+			{
+				//System.out.println("left is same color piece");
+				piece.openSpaces[0] = false;
+			}
 		}
 		catch(ArrayIndexOutOfBoundsException ex)
 		{
@@ -310,11 +325,19 @@ public class Group {
 		{
 		if(under[oY][oX+1] != null &&
 				under[oY][oX+1].getNumber() == piece.getNumber())
+		{
+			//System.out.println("right is same color piece");
 			piece.openSpaces[1] = false;
+		}
 		}
 		catch(ArrayIndexOutOfBoundsException ex) 
 		{
 			piece.openSpaces[1] = false;
+		}
+		
+		for( int i = 0; i < piece.openSpaces.length; i++)
+		{
+			//System.out.println(piece.openSpaces[i]);
 		}
 	}
 	//Return the locations of the open spaces
@@ -323,18 +346,46 @@ public class Group {
 		for(int i = 0; i < piece.openSpaces.length; i++){
 			if(piece.openSpaces[i]){
 				if(i == 0)
+				{
+					//System.err.println("piece to the left");
 					toReturn.add(new Point(piece.getY(), piece.getX() - 1));
+				}
 				if(i == 1)
+				{
+					//System.err.println("piece to the right");
 					toReturn.add(new Point(piece.getY(), piece.getX() + 1));
+				}
 				if(i == 2)
+				{
+					//System.err.println("piece to the top");
 					toReturn.add(new Point(piece.getY() - 1, piece.getX()));
+				}
 				if(i == 3)
+				{
+					//System.err.println("piece to the bottom");
+					//System.out.println("Bottom piece got added");
 					toReturn.add(new Point(piece.getY() + 1, piece.getX()));
+				}
 			}
 		}
 		
 		return toReturn;
 	}
+	
+//	public boolean[] getOpenSpaces(StonePiece piece, StonePiece[][] under){
+//	boolean[] toReturn = new boolean[4];
+//	for(int i = 0; i < piece.openSpaces.length; i++){
+//		if(piece.openSpaces[i]){
+//			toReturn[i] = true;
+//		}
+//		else
+//		{
+//			toReturn[i] = false;
+//		}
+//	}
+//	
+//	return toReturn;
+//	}
 	/*
 	 * Getter method to return the number
 	 * of groups on the board currently

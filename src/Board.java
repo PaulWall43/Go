@@ -125,6 +125,9 @@ public class Board extends JPanel{
 			return;
 		}*/
 		StonePiece toCheck = null;
+		StonePiece toCheck2 = null;
+		StonePiece toCheck3 = null;
+		StonePiece toCheck4 = null;
 		StonePiece oldPiece = null;
 		//This group of instantiations and declarations is for the case where a piece is touching multiple groups
 		//oldPiece will be used as first piece since we've already declared it
@@ -168,7 +171,17 @@ public class Board extends JPanel{
 				if(under[r][c].getNumber() != piece.getNumber()) {
 					//call to check two
 					continued = true;
-					toCheck = under[r][c]; // This is the touching piece
+					if(toCheck == null)
+						toCheck = under[r][c]; // This is the touching piece
+					else if(toCheck2 == null)
+						toCheck2 = under[r][c];
+					else if(toCheck3 == null)
+					{
+						toCheck3 = under[r][c];
+					}
+					else
+						toCheck4 = under[r][c];
+					//System.err.println(r + " " + c);
 				}	
 				//if the placed piece is touching a same color piece then add piece to the group
 				if(under[r][c].getNumber() == piece.getNumber()){
@@ -247,8 +260,14 @@ public class Board extends JPanel{
 		if(continued && toCheck != null)
 		{
 			this.secondStep(toCheck);
+			if(toCheck2 != null)
+				this.secondStep(toCheck2);
+			if(toCheck3 != null)
+				this.secondStep(toCheck3);
+			if(toCheck4 != null)
+				this.secondStep(toCheck4);
 		}
-		System.err.println("The number of groups on board:" + Group.getCount()); 
+		//System.err.println("The number of groups on board:" + Group.getCount()); 
 	}
 	
 	//this methods creates a group (size of 1  to lines * lines)
@@ -262,6 +281,8 @@ public class Board extends JPanel{
 	//--->7) Find the outside pieces 
 	//--->8) check if all outside pieces are 
 	public void secondStep(StonePiece piece){
+		//System.err.println("Second step was called");
+		//System.err.println("");
 		if((piece.getGroup(this)).isCaptured(piece, this.under))
 			piece.getGroup(this).remove(this);
 	}
