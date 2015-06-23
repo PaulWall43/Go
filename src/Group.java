@@ -12,7 +12,7 @@ public class Group {
 	private int numberColor;
 	//id starts at 0
 	private int id; 
-	private static int count = 0;
+	private static int count = 0; //number of groups
 	private static int countOfEmptyGroups = 0;
 	private static final Logger logger = LoggerFactory.getLogger(Group.class);
 		
@@ -108,7 +108,7 @@ public class Group {
 				}
 			}	
 		}
-		System.out.println("");
+		//System.out.println("");
 		return toReturn;
 	}
 	
@@ -188,6 +188,7 @@ public class Group {
 			for(int i = 0; i < touchingGroups[a].group.size(); i++)
 			{
 				picked.group.add(touchingGroups[a].group.get(i)); 
+				touchingGroups[a].group.get(i).setInGroupNumber(picked.id);
 			}			
 			
 			//Now remove this group
@@ -205,9 +206,12 @@ public class Group {
 		}
 		//finally add the StonePiece piece to the last remaining group
 		if(picked.numberColor == pieceAdded.getNumber())
+		{
 			picked.group.add(pieceAdded);
+			pieceAdded.setInGroupNumber(picked.id);
+			pieceAdded.setInGroup(true);
+		}
 		
-		System.err.println("new number of groups:" + Group.count);
 	} //end of combineGroups
 
 	
@@ -238,8 +242,8 @@ public class Group {
 	public void remove(Board goBoard){
 		for(int i = 0; i < group.size(); i++){
 				goBoard.remove(group.get(i));
-				System.err.println("Calling group.remove()");
-				System.err.println("The groupSize is: " + group.size());
+				//System.err.println("Calling group.remove()");
+				//System.err.println("The groupSize is: " + group.size());
 			}
 			group.clear();
 				//}

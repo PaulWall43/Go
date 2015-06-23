@@ -198,9 +198,11 @@ public class Board extends JPanel{
 					}
 					
 					//if this piece is not part of the other group then must combine groups
+					
 					else if(sameColorCounter == 1 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
 					{
-						System.err.println("second touching piece");
+						System.err.println("Now piece: " + under[r][c].getInGroupNumber() + " First piece: " + oldPiece.getInGroupNumber()); 
+						//System.err.println("second touching piece");
 						willAdd = false;
 						secondTouch = under[r][c];
 						sameColorCounter++;
@@ -208,14 +210,14 @@ public class Board extends JPanel{
 					//if played piece is touching 2 same color pieces
 					else if(sameColorCounter == 2 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
 					{
-						System.err.println("third touching piece");
+						//System.err.println("third touching piece");
 						thirdTouch = under[r][c];
 						sameColorCounter++;
 					}
 					//if played piece is touching 3 same color pieces
 					else if (sameColorCounter == 3 && under[r][c].getGroup(this) != oldPiece.getGroup(this))
 					{
-						System.err.println("fourth touching piece");
+						//System.err.println("fourth touching piece");
 						fourthTouch = under[r][c];
 						sameColorCounter++; 
 						}
@@ -234,21 +236,25 @@ public class Board extends JPanel{
 		
 		if(newGroup)
 		{
+			//System.err.println("new group being created");
 			listOfGroups.add(new Group(piece, this.under));
 		}
 
 		else if(sameColorCounter == 2)
 		{
+			System.err.println("Combining two groups");
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
 					null , null , piece , this);	
 		}
 		else if(sameColorCounter == 3)
 		{
+			System.err.println("Combining three groups");
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
 					thirdTouch.getGroup(this) , null , piece , this);	
 		}
 		else if(sameColorCounter == 4)
 		{
+			System.err.println("Combining four groups");
 			Group.combineGroups(oldPiece.getGroup(this), secondTouch.getGroup(this),
 					thirdTouch.getGroup(this), fourthTouch.getGroup(this), piece, this);	
 		}
@@ -285,6 +291,7 @@ public class Board extends JPanel{
 		//System.err.println("");
 		if((piece.getGroup(this)).isCaptured(piece, this.under))
 			piece.getGroup(this).remove(this);
+		//System.err.println("List of groups size: " + this.listOfGroups.size() + " group.getCount(): " + Group.getCount());
 	}
 
 	public void remove(StonePiece piece){
