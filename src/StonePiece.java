@@ -20,7 +20,7 @@ public class StonePiece {
 	//0 for black 1 for white
 	private int number;
 	//an identifying number
-	private final int COUNTED;
+	private final int ID;
 	//general count of how pieces have been played
 	private static int numberOfPieces;
 	
@@ -42,12 +42,13 @@ public class StonePiece {
 		points[1] = array[1]; //x-coordinate
 		this.y = points[0];
 		this.x = points[1];
-		StonePiece.numberOfPieces++;
-		this.COUNTED = numberOfPieces;
+		//StonePiece.numberOfPieces++;
+		//this.ID = numberOfPieces;
+		this.ID = numberOfPieces++;
 	}
 	
-	public int getCOUNTED(){
-		return this.COUNTED;
+	public int getID(){
+		return this.ID;
 	}
 	
 	public Color getColor(){
@@ -117,7 +118,6 @@ public class StonePiece {
 	
 	//method that returns the group that this specific StonePiece is in
 	public Group getGroup(Board goBoard){ 
-		//System.err.println(inGroupNumber);
 		if(goBoard.listOfGroups.size() > 0)
 			return goBoard.listOfGroups.get(inGroupNumber);
 		return null;

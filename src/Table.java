@@ -37,7 +37,7 @@ public class Table extends JFrame {
 		//add the board to the table
 		board = new Board(this.lines);
 		this.add(board);
-		Mat goMat = new Mat();
+		Mat goMat = new Mat(board);
 		this.add(goMat);
 		this.setVisible(true);
 		this.setResizable(false);

@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class Board extends JPanel{
-	private static int lines;
+	private int lines;
 	//underlying array controls state of the game
 	private StonePiece[][] under;
 	//arrayLists of arrayLists
@@ -35,7 +35,7 @@ public class Board extends JPanel{
 			}
 		IListen listener = new IListen();
 		this.addMouseListener(listener);
-		this.turn = PLAYER_ONE;
+		this.setTurn(PLAYER_ONE);
 		this.setBackground(new Color(255,222,173));
 	}
 	@Override
@@ -320,13 +320,48 @@ public class Board extends JPanel{
 		}
 	}
 	
+	//Method to reset the game 
+	public void resetBoard(){
+		for(int i = 0; i < lines; i++){
+			for(int j = 0; j < lines; j++){
+				under[i][j] = null; 
+			}
+		}
+		this.listOfGroups.clear(); 
+		this.setTurn(PLAYER_ONE);
+		this.repaint();
+	}
 	
+	//Method to skip a turn
+	public void pass(){
+		if(this.getTurn() == 1){
+			this.setTurn(0);
+		} else { 
+			this.setTurn(1);
+		}
+	}
 	
-	public static int getLines()
+	public void undo(){
+		System.out.println("Will implement soon :)");
+	}
+	public int getLines()
 	{
 		return lines;
 	}
 	
+	/**
+	 * @return the turn
+	 */
+	public int getTurn() {
+		return turn;
+	}
+	/**
+	 * @param turn the turn to set
+	 */
+	public void setTurn(int turn) {
+		this.turn = turn;
+	}
+
 	//Inner class to for action listeners
 	public class IListen implements MouseListener {
 		public void mouseClicked(MouseEvent e){
@@ -334,7 +369,7 @@ public class Board extends JPanel{
 			Point clicked = new Point(e.getX(), e.getY());
 			//System.out.println(e.getX() + " " + e.getY());
 			
-			if(Board.this.turn == PLAYER_ONE){
+			if(Board.this.getTurn() == PLAYER_ONE){
 				//call to helper
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
@@ -345,10 +380,10 @@ public class Board extends JPanel{
 				under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut);
 				Board.this.firstCheck(under[toPut[0]][toPut[1]]);
 				Board.this.repaint();
-				Board.this.turn = PLAYER_TWO;
+				Board.this.setTurn(PLAYER_TWO);
 				}
 			}
-			else if(Board.this.turn == PLAYER_TWO){
+			else if(Board.this.getTurn() == PLAYER_TWO){
 				//call to helper
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
@@ -359,7 +394,7 @@ public class Board extends JPanel{
 				under[toPut[0]][toPut[1]] = new StonePiece(Color.WHITE, toPut);
 				Board.this.firstCheck(under[toPut[0]][toPut[1]]);
 				Board.this.repaint();
-				Board.this.turn = PLAYER_ONE;
+				Board.this.setTurn(PLAYER_ONE);
 				}
 			}
 				

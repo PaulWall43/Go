@@ -147,15 +147,15 @@ public class Group {
 		touchingGroups[3] = group4;
 		
 		//Find how many groups are null
-		int numOfNullGroups = 0;
-		for(int i = 0; i < touchingGroups.length; i++)
-		{
-			if(touchingGroups[touchingGroups.length - i - 1] == null)
-			{
-				numOfNullGroups++; 
-			}
-			break;
-		}
+//		int numOfNullGroups = 0;
+//		for(int i = 0; i < touchingGroups.length; i++)
+//		{
+//			if(touchingGroups[touchingGroups.length - i - 1] == null)
+//			{
+//				numOfNullGroups++; 
+//			}
+//			break;
+//		}
 		//set up a counter to keep track of the minimum
 		//Note: could use a wrapper class to use the null feature for better code
 		int check = -1;
