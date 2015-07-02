@@ -298,7 +298,7 @@ public class Board extends JPanel{
 		under[piece.getY()][piece.getX()] = null;
 	}
 	
-	/**This method calls the addPieceToGroup method in group
+	/*This method calls the addPieceToGroup method in group
 	 * If there is already a group on the board then this method is valid
 	 * adds the newly placed piece to group that it is touching
 	 * Also sets that pieces inGroupNumber field which may be important later
@@ -406,7 +406,7 @@ public class Board extends JPanel{
 			
 	
 	/*Helper method to find the nearest point on the board to associate the mouse event with
-	 *@param point The point derived from the mouse event
+	 * @param point The point derived from the mouse event
 	 * This method has a function which maps the x coordinate of the click to a point on board
 	 * This method also has a function which maps the y coordinate of the click to a point on the board
 	 * */
@@ -559,7 +559,7 @@ public class Board extends JPanel{
 
 
 //PLAN FOR HOW LONG THIS WILL TAKE
-/**
+/*
  * 1) Must throw exception or overload the method and finish the combine method
  * 2) Must make multiple checks for touching of opposing pieces
  * 3) Must finish the edge  algorithm and whatever stuff that has to deal with
