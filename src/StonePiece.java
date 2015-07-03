@@ -32,10 +32,10 @@ public class StonePiece {
 			openSpaces[i] = true;
 		this.color = newColor;
 		if(newColor == Color.BLACK)
-			this.number = 0;
+			this.number = 1;
 		else
 			//watch for bugs here
-			this.number = 1;
+			this.number = 2;
 		//new array to prevent object connection and possible bugs
 		this.points = new int[2];
 		points[0] = array[0]; //y-coordinate
@@ -75,7 +75,7 @@ public class StonePiece {
 	//return the opposite number of the piece selected
 	public int oppNum(){
 		if(this.getNumber() == 1)
-			return 0;
+			return 2;
 		else
 			return 1;
 	}

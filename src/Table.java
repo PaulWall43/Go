@@ -35,7 +35,7 @@ public class Table extends JFrame {
 		//BorderLayout borders = new BorderLayout();
 		this.setLayout(new GridLayout());
 		//add the board to the table
-		board = new Board(this.lines);
+		board = new Board(this.lines, false);
 		this.add(board);
 		Mat goMat = new Mat(board);
 		this.add(goMat);

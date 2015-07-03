@@ -21,10 +21,11 @@ public class Board extends JPanel{
 	private final int PLAYER_ONE = 1;
 	private final int PLAYER_TWO = 2;
 	private int turn;
+	private boolean suicideIsAllowed = false; //assume false
 	private static final Logger logger = LoggerFactory.getLogger(Board.class);
 	
 	//Constructor
-	public Board(int lines){
+	public Board(int lines, boolean suicideIsAllowed){
 		logger.info("Creating board");
 		this.lines = lines;
 		this.under = new StonePiece[lines][lines];
@@ -37,6 +38,7 @@ public class Board extends JPanel{
 		this.addMouseListener(listener);
 		this.setTurn(PLAYER_ONE);
 		this.setBackground(new Color(255,222,173));
+		this.suicideIsAllowed = suicideIsAllowed; 
 	}
 	@Override
 	public void paintComponent(Graphics g){
@@ -103,12 +105,185 @@ public class Board extends JPanel{
 	/**Method to decide whether or not the move is allowed
 	 * If the move is allowed it returns true
 	 * if not then it returns false
+	 * Not static because it depends on the specific board
 	 */
-	public static boolean isAllowed(Point point, int player) {
-		//first going to implement the capture rule
-	return true;
+	public boolean isAllowed(int[] positionOfPiece, int blackOrWhite) {
+		//Check if suicide rule is allowed
+		if(isSingleSuicide(positionOfPiece, blackOrWhite)){
+			return false;
+		}
+		if(isGroupSuicide(positionOfPiece, blackOrWhite)){
+			return false;
+		}
+		return true;
 	}
 	
+	/**
+	 * Method will check to see if the placement of a piece will kill the group that it joins
+	 * @param positionOfPiece
+	 * @param blackOrWhite
+	 * @return
+	 */
+	public boolean isGroupSuicide(int[] positionOfPiece, int blackOrWhite){
+		try{
+			if(under[positionOfPiece[0] + 1][positionOfPiece[1]] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0] - 1][positionOfPiece[1]] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] + 1] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] - 1] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		if(blackOrWhite == 1)
+			under[positionOfPiece[0]][positionOfPiece[1]] = new StonePiece(Color.WHITE, positionOfPiece);
+		else
+			under[positionOfPiece[0]][positionOfPiece[1]] = new StonePiece(Color.BLACK, positionOfPiece);
+		
+		try{
+			if(under[positionOfPiece[0] + 1][positionOfPiece[1]].getNumber() == blackOrWhite){
+				if(under[positionOfPiece[0] + 1][positionOfPiece[1]].getGroup(this).isCaptured(under[positionOfPiece[0] + 1][positionOfPiece[1]], under)){
+					under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+					return true;
+				}
+			}
+		} catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0] - 1][positionOfPiece[1]].getNumber() == blackOrWhite){
+				if(under[positionOfPiece[0] - 1][positionOfPiece[1]].getGroup(this).isCaptured(under[positionOfPiece[0] - 1][positionOfPiece[1]], under)){
+					under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+					System.out.println("It's here");
+					return true;
+				}
+			}
+		} catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] + 1].getNumber() == blackOrWhite){
+				if(under[positionOfPiece[0]][positionOfPiece[1] + 1].getGroup(this).isCaptured(under[positionOfPiece[0]][positionOfPiece[1] + 1], under)){
+					under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+					return true;
+				}
+			}
+		} catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] - 1].getNumber() == blackOrWhite){
+				if(under[positionOfPiece[0]][positionOfPiece[1] - 1].getGroup(this).isCaptured(under[positionOfPiece[0] - 1][positionOfPiece[1]], under)){
+					under[positionOfPiece[0]][positionOfPiece[1] - 1] = null; 
+					return true;
+				}
+			}
+		} catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		under[positionOfPiece[0]][positionOfPiece[1]] = null;
+		return false;
+	}
+	public boolean isSingleSuicide(int[] positionOfPiece, int blackOrWhite){
+		//first check if any spots are null, if so return true
+		try{
+			if(under[positionOfPiece[0] + 1][positionOfPiece[1]] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0] - 1][positionOfPiece[1]] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] + 1] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] - 1] == null)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		//could be true we'll investigate further
+		
+		try{
+			if(under[positionOfPiece[0] + 1][positionOfPiece[1]].getNumber() == blackOrWhite)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0] - 1][positionOfPiece[1]].getNumber() == blackOrWhite)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] + 1].getNumber() == blackOrWhite)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0] ][positionOfPiece[1] - 1].getNumber() == blackOrWhite)
+				return false;
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		//Check to see if it is a capturing piece, if it is then return false
+		if(blackOrWhite == 1)
+			under[positionOfPiece[0]][positionOfPiece[1]] = new StonePiece(Color.BLACK, positionOfPiece);
+		else
+			under[positionOfPiece[0]][positionOfPiece[1]] = new StonePiece(Color.WHITE, positionOfPiece);
+		//for now call isCaptured on all pieces surrounding the piece
+		try{
+			if(under[positionOfPiece[0] + 1][positionOfPiece[1]].getGroup(this).isCaptured(under[positionOfPiece[0] + 1][positionOfPiece[1]], under)){
+				under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+				return false;
+			}
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0] - 1][positionOfPiece[1]].getGroup(this).isCaptured(under[positionOfPiece[0] - 1][positionOfPiece[1]], under)){
+				under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+				return false;
+			}
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] + 1].getGroup(this).isCaptured(under[positionOfPiece[0]][positionOfPiece[1] + 1], under)){
+				under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+				return false;
+			}
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		
+		try{
+			if(under[positionOfPiece[0]][positionOfPiece[1] - 1].getGroup(this).isCaptured(under[positionOfPiece[0]][positionOfPiece[1] - 1], under)){
+				under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+				return false;
+			}
+		}
+		catch(ArrayIndexOutOfBoundsException ex){/*empty implementation, assume opposing piece*/}
+		under[positionOfPiece[0]][positionOfPiece[1]] = null; 
+		return true; 
+	}
 	/**THIS IS THE BEGINNING OF THE SINGLE STONE CAPTURE ALGORITHM
 	 * 
 	 * Call this method on the piece that was most recently placed
@@ -370,14 +545,14 @@ public class Board extends JPanel{
 		public void mouseClicked(MouseEvent e){
 			//check to see if click was on the board
 			Point clicked = new Point(e.getX(), e.getY());
-			System.out.println(e.getX() + " " + e.getY());
+			//System.out.println(e.getX() + " " + e.getY());
 			
 			if(Board.this.getTurn() == PLAYER_ONE){
 				//call to helper
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
 				Point toCheck = new Point(toPut[0], toPut[1]);
-				if(Board.isAllowed(toCheck, BLACK )) {
+				if(isAllowed(toPut, BLACK )) {
 					if(under[toPut[0]][toPut[1]] != null)
 						return;
 					under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut);
@@ -391,8 +566,7 @@ public class Board extends JPanel{
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
 				Point toCheck = new Point(toPut[0], toPut[1]);
-				System.out.println(isAllowed(toCheck,WHITE));
-				if(isAllowed(toCheck, WHITE)) {
+				if(isAllowed(toPut, WHITE)) {
 					if(under[toPut[0]][toPut[1]] != null)
 						return;
 					under[toPut[0]][toPut[1]] = new StonePiece(Color.WHITE, toPut);
