@@ -324,8 +324,11 @@ public class Board extends JPanel{
 	public void resetBoard(){
 		for(int i = 0; i < lines; i++){
 			for(int j = 0; j < lines; j++){
-				under[i][j] = null; 
+					under[i][j] = null; 
 			}
+		}
+		for(int i = 0; i < listOfGroups.size(); i++){
+			listOfGroups.get(i).clearGroup(); 
 		}
 		this.listOfGroups.clear(); 
 		this.setTurn(PLAYER_ONE);

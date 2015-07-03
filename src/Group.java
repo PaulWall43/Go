@@ -13,7 +13,6 @@ public class Group {
 	//id starts at 0
 	private int id; 
 	private static int count = 0; //number of groups
-	private static int countOfEmptyGroups = 0;
 	private static final Logger logger = LoggerFactory.getLogger(Group.class);
 		
 	//constructor
@@ -411,6 +410,11 @@ public class Group {
 		{
 			this.group.get(i).setInGroupNumber(this.group.get(i).getInGroupNumber() - 1);
 		}
+	}
+	
+	public void clearGroup(){
+		Group.count--;
+		group.clear();
 	}
 	
 }
