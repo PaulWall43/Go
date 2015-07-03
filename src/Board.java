@@ -337,10 +337,10 @@ public class Board extends JPanel{
 	
 	//Method to skip a turn
 	public void pass(){
-		if(this.getTurn() == 1){
-			this.setTurn(0);
+		if(this.getTurn() == PLAYER_ONE){
+			this.setTurn(PLAYER_TWO);
 		} else { 
-			this.setTurn(1);
+			this.setTurn(PLAYER_ONE);
 		}
 	}
 	
@@ -370,7 +370,7 @@ public class Board extends JPanel{
 		public void mouseClicked(MouseEvent e){
 			//check to see if click was on the board
 			Point clicked = new Point(e.getX(), e.getY());
-			//System.out.println(e.getX() + " " + e.getY());
+			System.out.println(e.getX() + " " + e.getY());
 			
 			if(Board.this.getTurn() == PLAYER_ONE){
 				//call to helper
@@ -380,10 +380,10 @@ public class Board extends JPanel{
 				if(Board.isAllowed(toCheck, BLACK )) {
 					if(under[toPut[0]][toPut[1]] != null)
 						return;
-				under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut);
-				Board.this.firstCheck(under[toPut[0]][toPut[1]]);
-				Board.this.repaint();
-				Board.this.setTurn(PLAYER_TWO);
+					under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut);
+					Board.this.firstCheck(under[toPut[0]][toPut[1]]);
+					Board.this.repaint();
+					Board.this.setTurn(PLAYER_TWO);
 				}
 			}
 			else if(Board.this.getTurn() == PLAYER_TWO){
@@ -391,13 +391,14 @@ public class Board extends JPanel{
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
 				Point toCheck = new Point(toPut[0], toPut[1]);
+				System.out.println(isAllowed(toCheck,WHITE));
 				if(isAllowed(toCheck, WHITE)) {
 					if(under[toPut[0]][toPut[1]] != null)
 						return;
-				under[toPut[0]][toPut[1]] = new StonePiece(Color.WHITE, toPut);
-				Board.this.firstCheck(under[toPut[0]][toPut[1]]);
-				Board.this.repaint();
-				Board.this.setTurn(PLAYER_ONE);
+					under[toPut[0]][toPut[1]] = new StonePiece(Color.WHITE, toPut);
+					Board.this.firstCheck(under[toPut[0]][toPut[1]]);
+					Board.this.repaint();
+					Board.this.setTurn(PLAYER_ONE);
 				}
 			}
 				
