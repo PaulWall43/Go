@@ -1,10 +1,10 @@
-import org.slf4j.Logger;
+//import org.slf4j.Logger;
 
 import java.awt.Point;
 import java.util.ArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class Group {
 	protected ArrayList<StonePiece> group;
@@ -13,7 +13,7 @@ public class Group {
 	//id starts at 0
 	private int id; 
 	private static int count = 0; //number of groups
-	private static final Logger logger = LoggerFactory.getLogger(Group.class);
+	//private static final Logger logger = LoggerFactory.getLogger(Group.class);
 		
 	//constructor
 	public Group(StonePiece piece, StonePiece[][] under){
@@ -70,7 +70,7 @@ public class Group {
 	 */
 	public boolean isCaptured(StonePiece piece, StonePiece[][] under)
 	{
-		logger.debug("isCaptured has been called");
+		//logger.debug("isCaptured has been called");
 		//System.err.println("isCaptured has been called");
 		boolean toReturn = true;
 		for(int i = 0; i < group.size(); i++)

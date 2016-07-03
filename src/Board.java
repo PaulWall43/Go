@@ -1,5 +1,5 @@
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.lang.ArrayIndexOutOfBoundsException;
 
@@ -14,6 +14,7 @@ public class Board extends JPanel{
 	private int lines;
 	//underlying array controls state of the game
 	private StonePiece[][] under;
+	private String[][] boardPositionStatus; 
 	//arrayLists of arrayLists
 	protected ArrayList<Group> listOfGroups = new ArrayList<Group>();
 	private final int BLACK = 1;
@@ -22,17 +23,19 @@ public class Board extends JPanel{
 	private final int PLAYER_TWO = 2;
 	private int turn;
 	private boolean suicideIsAllowed = false; //assume false
-	private static final Logger logger = LoggerFactory.getLogger(Board.class);
+	//private static final Logger logger = LoggerFactory.getLogger(Board.class);
 	
 	//Constructor
 	public Board(int lines, boolean suicideIsAllowed){
-		logger.info("Creating board");
+		//logger.info("Creating board");
 		this.lines = lines;
 		this.under = new StonePiece[lines][lines];
+		this.boardPositionStatus = new String[lines][lines];
 		//fill the array with zeros
 		for(int r = 0; r < lines;r++)
 			for(int c = 0; c < lines ; c++) {
 				under[r][c] = null;
+				boardPositionStatus[r][c] = "NA"; //for the komi rule 
 			}
 		IListen listener = new IListen();
 		this.addMouseListener(listener);
@@ -114,7 +117,7 @@ public class Board extends JPanel{
 		//Check if suicide rule is allowed
 		if(!suicideIsAllowed){
 			String isSingleSuicideResult = isSingleSuicide(positionOfPiece, blackOrWhite); 
-			System.out.println(isSingleSuicideResult);
+			//System.out.println(isSingleSuicideResult);
 			if(isSingleSuicideResult.equals("Is a suicide move")){
 				return false;
 			}
@@ -133,6 +136,10 @@ public class Board extends JPanel{
 				}
 			}
 		}
+		//check for already captured
+		// if(boardPositionStatus[positionOfPiece[0]][positionOfPiece[1]] == "C"){
+		// 	return false;
+		// }
 		return true;
 	}
 	/**
@@ -289,7 +296,7 @@ public class Board extends JPanel{
 	public boolean isACapturePiece(int[] positionOfPiece, int blackOrWhite){
 		if(blackOrWhite == 1) {
 			under[positionOfPiece[0]][positionOfPiece[1]] = new StonePiece(Color.BLACK, positionOfPiece);
-			System.out.println("Put down a black piece");
+			//System.out.println("Put down a black piece");
 		}
 		else
 			under[positionOfPiece[0]][positionOfPiece[1]] = new StonePiece(Color.WHITE, positionOfPiece);
@@ -298,7 +305,7 @@ public class Board extends JPanel{
 			if(under[positionOfPiece[0] + 1][positionOfPiece[1]].getNumber() != blackOrWhite){
 				if(under[positionOfPiece[0] + 1][positionOfPiece[1]].getGroup(this).isCaptured(under[positionOfPiece[0] + 1][positionOfPiece[1]], under)){
 					under[positionOfPiece[0]][positionOfPiece[1]] = null;
-					System.out.println("called 1");
+					//System.out.println("called 1");
 					return true;
 				}
 			}		
@@ -309,7 +316,7 @@ public class Board extends JPanel{
 			if(under[positionOfPiece[0] - 1][positionOfPiece[1]].getNumber() != blackOrWhite){
 				if(under[positionOfPiece[0] - 1][positionOfPiece[1]].getGroup(this).isCaptured(under[positionOfPiece[0] - 1][positionOfPiece[1]], under)){
 					under[positionOfPiece[0]][positionOfPiece[1]] = null; 
-					System.out.println("called 2");
+					//System.out.println("called 2");
 					return true;
 				}
 			}
@@ -320,7 +327,7 @@ public class Board extends JPanel{
 			if(under[positionOfPiece[0]][positionOfPiece[1] + 1].getNumber() != blackOrWhite){
 				if(under[positionOfPiece[0]][positionOfPiece[1] + 1].getGroup(this).isCaptured(under[positionOfPiece[0]][positionOfPiece[1] + 1], under)){
 					under[positionOfPiece[0]][positionOfPiece[1]] = null; 
-					System.out.println("called 3");
+					//System.out.println("called 3");
 					return true;
 				}
 			}
@@ -331,7 +338,7 @@ public class Board extends JPanel{
 			if(under[positionOfPiece[0]][positionOfPiece[1] - 1].getNumber() != blackOrWhite){
 				if(under[positionOfPiece[0]][positionOfPiece[1] - 1].getGroup(this).isCaptured(under[positionOfPiece[0]][positionOfPiece[1] - 1], under)){
 					under[positionOfPiece[0]][positionOfPiece[1]] = null; 
-					System.out.println("called 4");
+					//System.out.println("called 4");
 					return true;
 				}
 			}
@@ -497,13 +504,47 @@ public class Board extends JPanel{
 		}
 		if(continued && toCheck != null)
 		{
-			this.secondStep(toCheck);
-			if(toCheck2 != null)
-				this.secondStep(toCheck2);
-			if(toCheck3 != null)
-				this.secondStep(toCheck3);
-			if(toCheck4 != null)
-				this.secondStep(toCheck4);
+			boolean capturePiece = false; 
+			capturePiece = this.secondStep(toCheck);
+			if(capturePiece){
+				// if(boardPositionStatus[piece.getY()][piece.getX()] == "C"){
+				// 	boardPositionStatus[piece.getY()][piece.getX()] = "RC"; 
+				// } else {
+					boardPositionStatus[piece.getY()][piece.getX()] = "C";
+				//}
+			}
+			if(toCheck2 != null){
+				capturePiece = this.secondStep(toCheck2);
+				if(capturePiece){
+					// if(boardPositionStatus[piece.getY()][piece.getX()] == "C"){
+					// 	boardPositionStatus[piece.getY()][piece.getX()] = "RC"; 
+					// } else {
+						boardPositionStatus[piece.getY()][piece.getX()] = "C";
+					//}
+				}
+			}
+			if(toCheck3 != null){
+				capturePiece = this.secondStep(toCheck3);
+				if(capturePiece){
+					// if(boardPositionStatus[piece.getY()][piece.getX()] == "C"){
+					// 	boardPositionStatus[piece.getY()][piece.getX()] = "RC"; 
+					// } else {
+						boardPositionStatus[piece.getY()][piece.getX()] = "C";
+					//}
+				}
+			}
+			if(toCheck4 != null){
+				capturePiece = this.secondStep(toCheck4);
+				if(capturePiece){
+					// if(boardPositionStatus[piece.getY()][piece.getX()] == "C"){
+					// 	boardPositionStatus[piece.getY()][piece.getX()] = "RC"; 
+					// } else {
+						boardPositionStatus[piece.getY()][piece.getX()] = "C";
+					//}
+				}
+			}
+			//System.out.println(boardPositionStatus[piece.getY()][piece.getX()]);
+			//System.out.println(piece.getY() + " " + piece.getX());
 		}
 		//System.err.println("The number of groups on board:" + Group.getCount()); 
 	}
@@ -518,16 +559,27 @@ public class Board extends JPanel{
 	//--->6) This should give us all the pieces in the group
 	//--->7) Find the outside pieces 
 	//--->8) check if all outside pieces are 
-	public void secondStep(StonePiece piece){
+	public boolean secondStep(StonePiece piece){
 		//System.err.println("Second step was called");
 		//System.err.println("");
-		if((piece.getGroup(this)).isCaptured(piece, this.under))
+		if((piece.getGroup(this)).isCaptured(piece, this.under)){
 			piece.getGroup(this).remove(this);
+			return true;
+		}
+		return false; 
 		//System.err.println("List of groups size: " + this.listOfGroups.size() + " group.getCount(): " + Group.getCount());
 	}
 
 	public void remove(StonePiece piece){
+		//System.out.println("remove called in Board");
 		under[piece.getY()][piece.getX()] = null;
+		//System.out.println(boardPositionStatus[piece.getY()][piece.getX()]);
+		if(boardPositionStatus[piece.getY()][piece.getX()] == "C"){
+			//System.out.println("HERERERERERERERe");
+			boardPositionStatus[piece.getY()][piece.getX()] = "RC";
+		}
+		// else
+			//boardPositionStatus[piece.getY()][piece.getX()] = "C";
 	}
 	
 	/*This method calls the addPieceToGroup method in group
@@ -560,7 +612,9 @@ public class Board extends JPanel{
 			}
 		}
 		for(int i = 0; i < listOfGroups.size(); i++){
-			listOfGroups.get(i).clearGroup(); 
+			if(listOfGroups.get(i).getCount() > 0){
+				listOfGroups.get(i).clearGroup(); 
+			}
 		}
 		this.listOfGroups.clear(); 
 		this.setTurn(PLAYER_ONE);
@@ -597,19 +651,28 @@ public class Board extends JPanel{
 		this.turn = turn;
 	}
 
+	// public boolean checkBoardPosition(int[] toPut){
+	// 	if(boardPositionStatus[toPut[0]][toPut[1]] == "RC"){
+	// 		return false 
+	// 	}
+	// }
+
+
 	//Inner class to for action listeners
 	public class IListen implements MouseListener {
 		public void mouseClicked(MouseEvent e){
 			//check to see if click was on the board
 			Point clicked = new Point(e.getX(), e.getY());
 			//System.out.println(e.getX() + " " + e.getY());
-			
 			if(Board.this.getTurn() == PLAYER_ONE){
 				//call to helper
 				int[] toPut = this.mapPoint(clicked);
 				//map from coordinates to array
 				Point toCheck = new Point(toPut[0], toPut[1]);
 				if(isAllowed(toPut, BLACK )) {
+					if(boardPositionStatus[toPut[0]][toPut[1]] == "RC"){
+						return; 
+					}
 					if(under[toPut[0]][toPut[1]] != null)
 						return;
 					under[toPut[0]][toPut[1]] = new StonePiece(Color.BLACK, toPut);
@@ -624,6 +687,10 @@ public class Board extends JPanel{
 				//map from coordinates to array
 				Point toCheck = new Point(toPut[0], toPut[1]);
 				if(isAllowed(toPut, WHITE)) {
+					//temp check
+					if(boardPositionStatus[toPut[0]][toPut[1]] == "RC"){
+						return; 
+					}
 					if(under[toPut[0]][toPut[1]] != null)
 						return;
 					under[toPut[0]][toPut[1]] = new StonePiece(Color.WHITE, toPut);
